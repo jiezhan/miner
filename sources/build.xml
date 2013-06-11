@@ -1,1 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<project name="miner" basedir="./" default="compile">
+	<path id="libpath">
+		<fileset dir="lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		
+		<property name="minerroot" value="miner" />
+		
+		<property name="srcDir" value="src/com/ly">
+		</property>
+		
+		<property name="srclibDir" value="lib">
+		</property>
+		
+		<property name="scriptDir" value="script">
+		</property>
+		
+		<property name="classDir" value="${minerroot}/class">
+		</property>
+		
+		<property name="binDir" value="${minerroot}/bin">
+		</property>
+		
+		<property name="logsDir" value="${minerroot}/conf/log">
+		</property>
+		
+		<property name="libDir" value="${minerroot}/lib">
+		</property>
+		
+		<property name="appsDir" value="${minerroot}/apps">
+		</property>
+	
+		<mkdir dir="${minerroot}" />
+		<mkdir dir="${classDir}" />
+		<mkdir dir="${binDir}" />
+		<mkdir dir="${logsDir}" />
+		<mkdir dir="${libDir}" />
+		<mkdir dir="${appsDir}" />
+	
+		<copy todir="${libDir}">
+			<fileset dir="${srclibDir}">
+				   <include name="*/**" />
+			</fileset>
+	    </copy>
+		<copy todir="${binDir}">
+			<fileset dir="${scriptDir}">
+				<include name="*/**" />
+			</fileset>
+		</copy>
+		
+	</target>
+	
+	<target name="compile" depends="init">
+		
+		<javac encoding="GB2312" srcdir="${srcDir}" destdir="${classDir}" classpathref="libpath" debug="true"/>
+		<!--<javac encoding="GB2312" srcdir="${jmsSrcDir}" destdir="${jmsClassDir}" classpathref="libpath" debug="true"/>-->
+		
+		<!--<jar destfile="${sourceJar}" basedir="${classDir}" includes="com/**" />-->
+       
+		<!--<jar destfile="${libDir}" basedir="${classDir}" includes="com/**" />-->
+		<jar destfile="${libDir}/miner.jar" basedir="${classDir}" includes="com/**" />
+		<delete dir="${classDir}" />
+    </target>
+</project>
