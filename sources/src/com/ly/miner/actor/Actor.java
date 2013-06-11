@@ -14,7 +14,7 @@ import com.ly.miner.mailbox.IMailBox;
  * @author zhanjie
  *
  */
-abstract class Actor<T> implements java.lang.Runnable{
+ abstract class Actor<T> implements java.lang.Runnable{
 	
 	private IExecutor execute;
 	
@@ -24,7 +24,9 @@ abstract class Actor<T> implements java.lang.Runnable{
 	
 	private List<Actor<?>> next;
 	
-	private volatile boolean isStoped;
+	private volatile boolean isStoped = false;
+	
+	private String name;
 	
 	public void start(){
 		execute.execute(this);
@@ -33,9 +35,9 @@ abstract class Actor<T> implements java.lang.Runnable{
 	@Override
 	public void run(){
 		
+		T item ;
 		while(!isStoped){
 			
-			T item ;
 			try {
 				 item = mailbox.task();
 			} catch (MailBoxException e) {
@@ -76,5 +78,9 @@ abstract class Actor<T> implements java.lang.Runnable{
 
 	public void setNext(List<Actor<?>> next) {
 		this.next = next;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

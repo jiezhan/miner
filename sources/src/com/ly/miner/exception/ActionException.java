@@ -1,10 +1,10 @@
 package com.ly.miner.exception;
 
-public class ActionException extends Exception {
-	
-	
-	private static final long serialVersionUID = 390954653714599087L;
+public class ActionException extends MinerException {
 
+	
+	private static final long serialVersionUID = 7001084086848693036L;
+	
 	public ActionException() {
 	}
 
@@ -20,7 +20,4 @@ public class ActionException extends Exception {
 		super(message, cause);
 	}
 	
-	 public Throwable getRootCause() {
-	        return getCause();
-	}
 }

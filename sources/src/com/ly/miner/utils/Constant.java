@@ -19,6 +19,8 @@ public final class Constant {
 	
 	public static String MINER_CONF_PATH;
 	
+	public static String MINER_LIB_PATH;
+	
 	static{
 		
 		MINER_HOME = System.getenv("MINER_HOME");
@@ -29,6 +31,7 @@ public final class Constant {
 		MINER_LOG_PATH += MINER_HOME + "apps" + File.separatorChar; 
 		MINER_LOG_PATH += MINER_HOME + "log" + File.separatorChar; 
 		MINER_CONF_PATH += MINER_HOME + "conf" + File.separatorChar;
+		MINER_LIB_PATH += MINER_LIB_PATH + "lib" + File.separatorChar;
 	}
 
 }

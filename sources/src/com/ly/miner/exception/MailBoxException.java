@@ -1,6 +1,6 @@
 package com.ly.miner.exception;
 
-public class MailBoxException extends Exception {
+public class MailBoxException extends MinerException {
 	
 	private static final long serialVersionUID = -6474160991692623546L;
 
@@ -19,7 +19,4 @@ public class MailBoxException extends Exception {
 		super(message, cause);
 	}
 	
-	 public Throwable getRootCause() {
-	        return getCause();
-	}
 }
