@@ -1,0 +1,9 @@
+dir=`dirname $PWD`
+export GDAM_HOME=$dir
+GDAM_LIB=.
+for jar in $dir/lib/*.jar
+do
+	GDAM_LIB=$GDAM_LIB:$jar
+done
+echo $GDAM_LIB
+java -Xmx1024m -classpath $GDAM_LIB: com.isoftstone.gdam.test.Test
