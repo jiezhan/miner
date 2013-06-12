@@ -3,8 +3,7 @@
  */
 package com.ly.miner.app;
 
-import org.json.JSONObject;
-
+import org.json.JSONArray;
 import com.ly.miner.actor.MinerActor;
 import com.ly.miner.exception.CreateAppException;
 
@@ -17,6 +16,7 @@ import com.ly.miner.exception.CreateAppException;
 	
 	final java.util.List<MinerActor> actorList = new java.util.LinkedList<MinerActor>();
 	
+	
 	@Override
 	public void start(){
 		for(MinerActor actor : actorList){
@@ -24,7 +24,14 @@ import com.ly.miner.exception.CreateAppException;
 		}
 	}
 	
-	void createActors(JSONObject config)throws CreateAppException{
+	@Override
+	public void stop(){
+		for(MinerActor actor : actorList){
+			actor.stop();
+		}
+	}
+	
+	void createActors(JSONArray config,AppClassLoader classloader)throws CreateAppException{
 		
 	}
 	void remove(MinerActor actor){

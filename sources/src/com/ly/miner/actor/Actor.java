@@ -54,7 +54,7 @@ import com.ly.miner.mailbox.IMailBox;
 		
 	}
 	
-	public void stopActor(){
+	public void stop(){
 		isStoped = true;
 		this.execute.stop();
 		this.mailbox.clear();

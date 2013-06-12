@@ -24,7 +24,7 @@ final public class AppConfig {
 	
 	public String getAppName()throws AppConfigException{
 		try {
-			return conf.getString("name");
+			return conf.getString(Application.APP_NAME_KEY);
 		} catch (JSONException e) {
 			throw new AppConfigException(e);
 		}
@@ -32,9 +32,13 @@ final public class AppConfig {
 	
 	public String getAppInstallPath()throws AppConfigException{
 		try {
-			return conf.getString("install-path");
+			return conf.getString(Application.APP_INSTALLPATH_KEY);
 		} catch (JSONException e) {
 			throw new AppConfigException(e);
 		}
+	}
+
+	public JSONObject getConf() {
+		return conf;
 	}
 }
