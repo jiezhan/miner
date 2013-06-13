@@ -18,15 +18,16 @@ import com.ly.miner.utils.Constant;
 public final class AppContext {
 	
 	private AppConfig appconfig;
-
+	
 	public AppConfig getAppconfig() {
 		return appconfig;
 	}
 	
 	public InputStream getResource(String fileName)throws ResourceException{
+		final String RESOURCES_STR = "resource";
 		String realPath;
 		try {
-			realPath = Constant.MINER_APPS_PATH + appconfig.getAppName() + File.separatorChar;
+			realPath = Constant.MINER_APPS_PATH + appconfig.getAppName() + File.separatorChar + RESOURCES_STR +  File.separatorChar + fileName;
 		} catch (AppConfigException e) {
 			throw new ResourceException(e);
 		}

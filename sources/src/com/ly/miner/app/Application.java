@@ -41,7 +41,7 @@ import com.ly.miner.exception.CreateAppException;
 	 
 	 private void createActorList()throws CreateAppException{
 		 try {
-			actorList.createActors(config.getConf().getJSONArray(ACTOR_LIST_KEY), classloader);
+			actorList.createActors(config.getConf().getJSONObject(ACTOR_LIST_KEY), classloader);
 		} catch (JSONException e) {
 			throw new CreateAppException(e);
 		}

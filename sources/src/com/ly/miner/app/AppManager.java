@@ -39,7 +39,7 @@ final class AppManager {
 				if(!f.isDirectory()){
 					throw new CreateAppException("the file of" + f.getAbsolutePath() +" is not directory.");
 				}
-				String configPathStr = appPath + f.getName() + File.separatorChar + Application.APP_CONFIGFILE_NAME;
+				String configPathStr = appPath + f.getName() + File.separatorChar + "conf" + File.separatorChar + Application.APP_CONFIGFILE_NAME;
 				String appconfStr;
 				try {
 					appconfStr = Helper.readFile(configPathStr);

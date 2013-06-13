@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="appdemo" basedir="./" default="compile">
+	<path id="libpath">
+		<fileset dir="lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		
+		<property name="appdemoroot" value="appdemo" />
+		
+		<property name="srcDir" value="src/com/ly">
+		</property>
+		
+		<property name="srclibDir" value="lib">
+		</property>
+		
+		<property name="classDir" value="${appdemoroot}/class">
+		</property>
+		
+		<property name="confDir" value="${appdemoroot}/conf">
+		</property>
+		
+		<property name="libDir" value="${appdemoroot}/lib">
+		</property>
+		
+		<property name="resource" value="${appdemoroot}/resource">
+		</property>
+	
+		<mkdir dir="${appdemoroot}" />
+		<mkdir dir="${classDir}" />
+		<mkdir dir="${confDir}" />
+		<mkdir dir="${libDir}" />
+		<mkdir dir="${resource}" />
+	
+		<copy todir="${libDir}">
+			<fileset dir="${srclibDir}">
+				   <include name="*/**" />
+			</fileset>
+	    </copy>
+		
+		<copy file="app.conf" todir="${confDir}"/>
+		
+	</target>
+	
+	<target name="compile" depends="init">
+		
+		<javac encoding="GB2312" srcdir="${srcDir}" destdir="${classDir}" classpathref="libpath" debug="true"/>
+		<!--<javac encoding="GB2312" srcdir="${jmsSrcDir}" destdir="${jmsClassDir}" classpathref="libpath" debug="true"/>-->
+		
+		<!--<jar destfile="${sourceJar}" basedir="${classDir}" includes="com/**" />-->
+       
+		<!--<jar destfile="${libDir}" basedir="${classDir}" includes="com/**" />-->
+		<jar destfile="${libDir}/appdemo.jar" basedir="${classDir}" includes="com/**" />
+		<delete dir="${classDir}" />
+    </target>
+</project>
