@@ -4,6 +4,9 @@
 package com.ly.miner.app;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.ly.miner.actor.MinerActor;
 import com.ly.miner.exception.CreateAppException;
 
@@ -32,6 +35,28 @@ import com.ly.miner.exception.CreateAppException;
 	}
 	
 	void createActors(JSONArray config,AppClassLoader classloader)throws CreateAppException{
+		
+		if(config == null){
+			throw new CreateAppException("actor list is null.");
+		}
+		for(int i =0 ; i < config.length(); i++){
+			JSONObject actorconfig = null;
+			try {
+				 actorconfig = config.getJSONObject(i);
+			} catch (JSONException e) {
+				throw new CreateAppException("config actor list is error.");
+			}
+			if(actorconfig != null){
+				try{
+					String name = actorconfig.getString("name");
+					String actionClass = actorconfig.getString("action");
+					String execute = actorconfig.getString("execute");
+				}catch(JSONException e){
+					throw new CreateAppException("config actor list is error.");
+				}
+				
+			}
+		}
 		
 	}
 	void remove(MinerActor actor){

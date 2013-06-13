@@ -66,6 +66,15 @@ final class AppManager {
 	
 	}
 	
+	public static void main(String[] args){
+		try {
+			installApp();
+		} catch (CreateAppException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public static void uninstallApp(){
 		for(Application app : apps.values()){
 			app.stop();
