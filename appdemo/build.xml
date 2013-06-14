@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="appdemo" basedir="./" default="compile">
+<project name="${project_name}" basedir="./" default="compile">
 	<path id="libpath">
 		<fileset dir="lib/">
 			<include name="**/*.jar" />
@@ -8,7 +8,7 @@
 
 	<target name="init">
 		
-		<property name="appdemoroot" value="appdemo" />
+		<property name="approot" value="${project_name}" />
 		
 		<property name="srcDir" value="src/com/ly">
 		</property>
@@ -16,19 +16,19 @@
 		<property name="srclibDir" value="lib">
 		</property>
 		
-		<property name="classDir" value="${appdemoroot}/class">
+		<property name="classDir" value="${approot}/class">
 		</property>
 		
-		<property name="confDir" value="${appdemoroot}/conf">
+		<property name="confDir" value="${approot}/conf">
 		</property>
 		
-		<property name="libDir" value="${appdemoroot}/lib">
+		<property name="libDir" value="${approot}/lib">
 		</property>
 		
-		<property name="resource" value="${appdemoroot}/resource">
+		<property name="resource" value="${approot}/resource">
 		</property>
 	
-		<mkdir dir="${appdemoroot}" />
+		<mkdir dir="${approot}" />
 		<mkdir dir="${classDir}" />
 		<mkdir dir="${confDir}" />
 		<mkdir dir="${libDir}" />
