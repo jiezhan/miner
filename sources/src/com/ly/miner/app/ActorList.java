@@ -6,12 +6,12 @@ package com.ly.miner.app;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.ly.miner.action.MinerAction;
 import com.ly.miner.actor.MinerActor;
-import com.ly.miner.exception.ActionException;
 import com.ly.miner.exception.AppClassLoaderException;
 import com.ly.miner.exception.CreateAppException;
+import com.ly.miner.execute.FixedThreadPoolExecutor;
+import com.ly.miner.mailbox.BlockQueueMailBox;
 
 
 /**
@@ -20,21 +20,22 @@ import com.ly.miner.exception.CreateAppException;
  */
  class ActorList extends MinerActor {
 	
-	private final java.util.List<MinerActor> actorList = new java.util.LinkedList<MinerActor>();
+	private final java.util.Map<String,MinerActor> actorList = new java.util.HashMap<String,MinerActor>();
 	private final String ACTORS_STR = "actors";
 	private final String ACTORS_RULES_STR = "rules";
+	private final int DEFAULT_MAILBOX_SIZE = 5 ;
 	
 	
 	@Override
 	public void start(){
-		for(MinerActor actor : actorList){
+		for(MinerActor actor : actorList.values()){
 			actor.start();
 		}
 	}
 	
 	@Override
 	public void stop(){
-		for(MinerActor actor : actorList){
+		for(MinerActor actor : actorList.values()){
 			actor.stop();
 		}
 	}
@@ -63,22 +64,24 @@ import com.ly.miner.exception.CreateAppException;
 			if(actor != null){
 				String name;
 				String actionClass;
-				String execute;
+				int execute;
 				try{
 					 name = actor.getString("name");
 					 actionClass = actor.getString("class");
-					 execute = actor.getString("execute");
+					 execute = actor.getInt("execute");
 				}catch(JSONException e){
 					throw new CreateAppException("config actor list is error.");
 				}
 				try {
 					MinerAction action = classloader.getObject(MinerAction.class, actionClass.trim());
-					try {
-						action.doit(null);
-					} catch (ActionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if(actorList.get(name) != null){
+						throw new CreateAppException("the actor name is already exist.");
 					}
+					MinerActor mactor = new MinerActor();
+					mactor.setAction(action);
+					mactor.setExecute(new FixedThreadPoolExecutor(("actor[" + name+"]"),execute));
+					mactor.setMailbox(new BlockQueueMailBox(DEFAULT_MAILBOX_SIZE));
+					actorList.put(name, mactor);
 				} catch (AppClassLoaderException e) {
 					throw new CreateAppException(e);
 				}
@@ -88,20 +91,11 @@ import com.ly.miner.exception.CreateAppException;
 		
 	}
 	void remove(MinerActor actor){
-		actorList.remove(actor);
+		remove(actor.getName());
 	}
 	
 	void remove(String actorName){
-		MinerActor target = null;
-		for(MinerActor actor : actorList){
-			if(actor.getName().equals(actorName)){
-				target = actor;
-				break;
-			}
-		}
-		if(target != null){
-			remove(target);
-		}
+		actorList.remove(actorName);
 	}
 	
 	void clear(){

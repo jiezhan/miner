@@ -7,29 +7,30 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import com.ly.miner.exception.MailBoxException;
+import com.ly.miner.utils.Event;
 
 
 /**
  * @author zhanjie
  *
  */
- class BlockQueueMailBox<T> implements IMailBox<T> {
+public class BlockQueueMailBox implements IMailBox<Event> {
 	
-	private final BlockingQueue<T> box;
+	private final BlockingQueue<Event> box;
 	
 	private int capacity = 1;
 	
 	public BlockQueueMailBox(){
-		box = new ArrayBlockingQueue<T>(capacity);
+		box = new ArrayBlockingQueue<Event>(capacity);
 	}
 	
 	public BlockQueueMailBox(int capacity){
 		this.capacity = capacity;
-		box = new ArrayBlockingQueue<T>(capacity);
+		box = new ArrayBlockingQueue<Event>(capacity);
 	}
 
 	@Override
-	public T task() throws MailBoxException{
+	public Event task() throws MailBoxException{
 		
 		try {
 			return box.take();
@@ -40,7 +41,7 @@ import com.ly.miner.exception.MailBoxException;
 	}
 
 	@Override
-	public void put(T item) throws MailBoxException{
+	public void put(Event item) throws MailBoxException{
 		
 		try {
 			box.put(item);

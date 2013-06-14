@@ -68,8 +68,16 @@ import com.ly.miner.mailbox.IMailBox;
 		return mailbox;
 	}
 
+	public void setMailbox(IMailBox<T> mailbox) {
+		this.mailbox = mailbox;
+	}
+
 	public IAction<T> getAction() {
 		return action;
+	}
+
+	public void setAction(IAction<T> action) {
+		this.action = action;
 	}
 
 	public List<Actor<?>> getNext() {

@@ -9,6 +9,6 @@ import com.ly.miner.utils.Event;
  * @author zhanjie
  *
  */
- public abstract class MinerActor extends Actor<Event> {
+ public  class MinerActor extends Actor<Event> {
 
 }
