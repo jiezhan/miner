@@ -21,6 +21,14 @@ public final class Constant {
 	
 	public static String MINER_LIB_PATH;
 	
+    public static final String ACTOR_LIST_KEY = "actorlist";
+	 
+	public static final String APP_NAME_KEY = "name";
+	 
+	public static final String APP_INSTALLPATH_KEY = "install-path";
+	 
+	public static final String APP_CONFIGFILE_NAME = "app.conf";
+	
 	static{
 		
 		MINER_HOME = System.getenv("MINER_HOME");

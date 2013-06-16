@@ -19,6 +19,10 @@ public final class AppContext {
 	
 	private AppConfig appconfig;
 	
+	public AppContext(AppConfig appconfig){
+		this.appconfig = appconfig;
+	}
+	
 	public AppConfig getAppconfig() {
 		return appconfig;
 	}

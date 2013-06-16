@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ly.miner.exception.AppConfigException;
+import com.ly.miner.utils.Constant;
 
 
 final public class AppConfig {
@@ -24,7 +25,7 @@ final public class AppConfig {
 	
 	public String getAppName()throws AppConfigException{
 		try {
-			return conf.getString(Application.APP_NAME_KEY);
+			return conf.getString(Constant.APP_NAME_KEY);
 		} catch (JSONException e) {
 			throw new AppConfigException(e);
 		}
@@ -32,7 +33,7 @@ final public class AppConfig {
 	
 	public String getAppInstallPath()throws AppConfigException{
 		try {
-			return conf.getString(Application.APP_INSTALLPATH_KEY);
+			return conf.getString(Constant.APP_INSTALLPATH_KEY);
 		} catch (JSONException e) {
 			throw new AppConfigException(e);
 		}

@@ -11,6 +11,10 @@ import com.ly.miner.exception.ActionException;
  */
  public interface IAction<T> {
 	
-	void doit(T t)throws ActionException;
+	void doit(T t) throws ActionException;
+	
+	void init() throws ActionException;
+	
+	void destroy() throws ActionException;
 
 }

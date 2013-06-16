@@ -45,6 +45,22 @@ import com.ly.miner.utils.Constant;
     	}
 		
 	}
+    
+    Class<?> getClass(String className)throws AppClassLoaderException{
+    	try{
+    		Class<?> c = appClassLoad.loadClass(className);
+    		if(c == null){
+    			 c = minerClassLoad.loadClass(className);
+    		}
+    		if(c == null){
+    			throw new AppClassLoaderException("class not found.");
+    		}
+    		return c;
+    	}catch(Exception e){
+    		throw new AppClassLoaderException(e);
+    	}
+		
+	}
 	 
     @SuppressWarnings("unchecked")
 	<T> T getObject(Class<T> t, String className)throws AppClassLoaderException{

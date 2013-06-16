@@ -5,37 +5,39 @@ package com.ly.miner.actor;
 
 import java.util.List;
 
-import com.ly.miner.action.IAction;
+import com.ly.miner.action.MinerAction;
 import com.ly.miner.exception.MailBoxException;
 import com.ly.miner.execute.IExecutor;
 import com.ly.miner.mailbox.IMailBox;
+import com.ly.miner.utils.Event;
 
 /**
  * @author zhanjie
  *
  */
- abstract class Actor<T> implements java.lang.Runnable{
+ public abstract class Actor implements java.lang.Runnable{
 	
 	private IExecutor execute;
 	
-	private IMailBox<T> mailbox;
+	private IMailBox<Event> mailbox;
 	
-	private IAction<T> action;
+	private MinerAction action;
 	
-	private List<Actor<?>> next;
+	private List<Actor> next;
 	
 	private volatile boolean isStoped = false;
 	
 	private String name;
 	
 	public void start(){
+		System.out.println("starting actor " + name);
 		execute.execute(this);
 	}
 	
 	@Override
-	public void run(){
+	final public void run(){
 		
-		T item ;
+		Event item ;
 		while(!isStoped){
 			
 			try {
@@ -50,11 +52,21 @@ import com.ly.miner.mailbox.IMailBox;
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+			if(next != null && next.size() > 0){
+				for(Actor n : next){
+					try {
+						n.getMailbox().put(item);
+					} catch (MailBoxException e) {
+						break;
+					}
+				}
+			}
 		}
 		
 	}
 	
 	public void stop(){
+		System.out.println("stoping actor " + name);
 		isStoped = true;
 		this.execute.stop();
 		this.mailbox.clear();
@@ -64,31 +76,35 @@ import com.ly.miner.mailbox.IMailBox;
 		this.execute = execute;
 	}
 
-	public IMailBox<T> getMailbox() {
+	public IMailBox<Event> getMailbox() {
 		return mailbox;
 	}
 
-	public void setMailbox(IMailBox<T> mailbox) {
+	public void setMailbox(IMailBox<Event> mailbox) {
 		this.mailbox = mailbox;
 	}
 
-	public IAction<T> getAction() {
+	public MinerAction getAction() {
 		return action;
 	}
 
-	public void setAction(IAction<T> action) {
+	public void setAction(MinerAction action) {
 		this.action = action;
 	}
 
-	public List<Actor<?>> getNext() {
+	public List<Actor> getNext() {
 		return next;
 	}
 
-	public void setNext(List<Actor<?>> next) {
+	public void setNext(List<Actor> next) {
 		this.next = next;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

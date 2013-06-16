@@ -9,7 +9,6 @@ import java.util.concurrent.BlockingQueue;
 import com.ly.miner.exception.MailBoxException;
 import com.ly.miner.utils.Event;
 
-
 /**
  * @author zhanjie
  *
