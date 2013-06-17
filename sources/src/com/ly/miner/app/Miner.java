@@ -19,7 +19,7 @@ public class Miner {
 		
 		AppManager.installApp();
 		
-		//AppManager.startApp();
+		AppManager.startApp();
 
 	}
 

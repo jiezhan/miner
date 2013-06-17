@@ -161,7 +161,7 @@ import com.ly.miner.utils.Event;
 					}
 					actorList.get(preactorStr).setNext(nexts);
 				}catch(JSONException e){
-					throw new CreateAppException("config actor list is error.");
+					throw new CreateAppException(e);
 				}
 			}
 		}
