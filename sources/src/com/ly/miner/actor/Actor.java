@@ -35,7 +35,7 @@ import com.ly.miner.utils.Event;
 	}
 	
 	@Override
-	final public void run(){
+	 public void run(){
 		
 		Event item ;
 		while(!isStoped){

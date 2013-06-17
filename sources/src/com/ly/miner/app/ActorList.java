@@ -81,7 +81,7 @@ import com.ly.miner.utils.Event;
 					 actionClass = actor.getString("class");
 					 execute = actor.getInt("execute");
 				}catch(JSONException e){
-					throw new CreateAppException("config actor list is error.");
+					throw new CreateAppException(e);
 				}
 				if(actorList.get(name) != null){
 					throw new CreateAppException("the actor name is already exist.");

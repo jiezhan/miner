@@ -11,6 +11,7 @@ import com.googlecode.transloader.Transloader;
 import com.ly.miner.exception.AppClassLoaderException;
 import com.ly.miner.exception.AppConfigException;
 import com.ly.miner.exception.CreateAppException;
+import com.ly.miner.exception.StartApplicationException;
 import com.ly.miner.utils.Constant;
 import com.ly.miner.utils.Helper;
 
@@ -23,7 +24,7 @@ final class AppManager {
 	
 	final static private Map<String,IApplication> apps = new java.util.HashMap<String, IApplication>();
 	
-	public static void startApp(){
+	public static void startApp()throws StartApplicationException {
 		for(IApplication app : apps.values()){
 			System.out.println(app.getAppName());
 			app.start();

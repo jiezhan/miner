@@ -1,6 +1,7 @@
 package com.ly.miner.app;
 
 import com.ly.miner.exception.CreateAppException;
+import com.ly.miner.exception.StartApplicationException;
 import com.ly.miner.utils.Event;
 /**
  * @author jiezhan
@@ -12,7 +13,7 @@ public interface IApplication {
 	 
 	 String getAppName();
 	 
-	 void start();
+	 void start()throws StartApplicationException ;
 	 
 	 void stop();
 	 
