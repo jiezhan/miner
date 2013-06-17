@@ -4,6 +4,7 @@
 package com.ly.miner.app;
 import org.json.JSONException;
 import com.ly.miner.exception.StartApplicationException;
+import com.ly.miner.execute.SingleThreadExecutor;
 import com.ly.miner.utils.Event;
 
 /**
@@ -29,11 +30,7 @@ public abstract class AbstractApplication implements IApplication {
 	@SuppressWarnings("rawtypes")
 	@Override
 	 public void start()throws StartApplicationException {
-		try{
-			actorList.start();
-		}catch(Exception e){
-			throw new StartApplicationException(e);
-		}
+		
 		String startClassStr = null;
 		try {
 			startClassStr = config.getConf().getString("start");
@@ -46,18 +43,24 @@ public abstract class AbstractApplication implements IApplication {
 		} catch (ClassNotFoundException e) {
 			throw new StartApplicationException(e);
 		}
-		IApplicationStart start;
+		AbstractApplicationStart start;
 		try {
-			start = (IApplicationStart)startClass.newInstance();
+			start = (AbstractApplicationStart)startClass.newInstance();
 		} catch (Exception e) {
 			throw new StartApplicationException(e);
 		} 
 		try {
 			start.setApplication(this);
-			start.start();
+			new SingleThreadExecutor("application-start").execute(start);
 		} catch (Exception e) {
 			throw new StartApplicationException(e);
 		} 
+		try{
+			System.out.print("xxxxxxxxxx");
+			actorList.start();
+		}catch(Exception e){
+			throw new StartApplicationException(e);
+		}
 		 
 	}
 

@@ -7,7 +7,7 @@ package com.ly.miner.app;
  * @author jiezhan;
  *
  */
-public abstract class AbstractApplicationStart implements IApplicationStart {
+public abstract class AbstractApplicationStart implements IApplicationStart,java.lang.Runnable {
 	
 	private IApplication application;
 
@@ -17,6 +17,10 @@ public abstract class AbstractApplicationStart implements IApplicationStart {
 	public IApplication getApplication() {
 		
 		return application;
+	}
+	@Override
+	final public void run(){
+		start();
 	}
 
 	
