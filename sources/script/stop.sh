@@ -1,4 +1,4 @@
 #!/bin/bash
-GDAM_HOME=`dirname $PWD`
-echo $GDAM_HOME
-ps -ef|grep -v grep|grep $GDAM_HOME |awk '{print "kill -9 "$2}'|sh
+MINER_HOME=`dirname $PWD`
+echo $MINER_HOME
+ps -ef|grep -v grep|grep $MINER_HOME |awk '{print "kill -9 "$2}'|sh
