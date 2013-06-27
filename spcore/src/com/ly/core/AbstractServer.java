@@ -3,20 +3,18 @@
  */
 package com.ly.core;
 
-import org.json.JSONObject;
-
-import com.ly.core.exception.ServerException;
 
 /**
  * @author jiezhan
  *
  */
-public abstract class AbstractServer implements IServer {
+public abstract class AbstractServer<T extends IServerConfig> implements IServer<T> {
 	
-	protected JSONObject conf;
+	protected T conf;
 	
-	final public void config(JSONObject conf) throws ServerException{
+	public AbstractServer(T conf){
 		this.conf = conf;
 	}
+	
 	
 }

@@ -3,17 +3,13 @@
  */
 package com.ly.core;
 
-import org.json.JSONObject;
-
 import com.ly.core.exception.ServerException;
 
 /**
  * @author jiezhan
  *
  */
-public interface IServer {
-	
-	void config(JSONObject conf) throws ServerException;
+public interface IServer<T extends IServerConfig> {
 	
 	void start() throws ServerException;
 	
