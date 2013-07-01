@@ -12,14 +12,16 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.FixedReceiveBufferSizePredictor;
 import org.jboss.netty.channel.socket.DatagramChannel;
+import org.jboss.netty.channel.socket.DefaultSocketChannelConfig;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioSocketChannelConfig;
+import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.oio.OioDatagramChannelFactory;
 import com.ly.core.exception.ClientException;
 import com.ly.core.utils.Constants;
@@ -28,7 +30,7 @@ import com.ly.core.utils.Constants;
  * @author zhanjie
  *
  */
-public abstract class NettyClient extends AbstractClient<SocketClientConfig> {
+public abstract class NettyClient extends AbstractClient<SocketClientConfig> implements ChannelFutureListener   {
 	
 	protected  ChannelFactory factory;
 	/**
@@ -65,6 +67,11 @@ public abstract class NettyClient extends AbstractClient<SocketClientConfig> {
 	protected InetSocketAddress serverAddress = null;
 	
 	protected final static ChannelFactory STATIC_FACTORY = new NioClientSocketChannelFactory(bossExecutor, workerExecutor);
+	
+	//if the client tried to write with out an connection
+		//store the data until connected. This is used when we
+		//are delaying the Client.
+	protected Object delayedWriteObject = null;
 
 	public NettyClient(SocketClientConfig conf) {
 		super(conf);
@@ -160,36 +167,60 @@ public abstract class NettyClient extends AbstractClient<SocketClientConfig> {
 		bootstrap.setPipelineFactory(pipelineFactory);
 		bootstrap.setOption("tcpNoDelay", true);
 		bootstrap.setOption("keepAlive", true);
-		if(_connectionTimeout>0){
-			_bootstrap.setOption("connectTimeoutMillis", _connectionTimeout);
+		if(conf._connectionTimeout > 0){
+			bootstrap.setOption("connectTimeoutMillis", conf._connectionTimeout);
 		}
 
 		// Start the connection attempt.
-		_future = _bootstrap.connect(new InetSocketAddress(
-									_clientConfiguration._endPointHostname, 
-									_clientConfiguration._endPointPort));
+		future = bootstrap.connect(new InetSocketAddress(
+									conf._endPointHostname, 
+									conf._endPointPort));
 			
-		if (_clientConfiguration._synchronousConnection == true){
-			_channel = awaitUninterruptibly().getChannel();
-//			if (_channel == null || 
-//				_channel.isConnected() == false){
-//				throw new RouterException("Failed to start the client connection to " + 
-//						_clientConfiguration._endPointHostname + ":" + 
-//						_clientConfiguration._endPointPort, null);
-//			}
-			((NioSocketChannelConfig)_channel.getConfig()).
-					setSendBufferSize(_clientConfiguration._packetBufferSize);
-			if (_clientConfiguration._initialObject != null){
-				_channel.write(_clientConfiguration._initialObject);
+		if (conf._synchronousConnection == true){
+			channel = awaitUninterruptibly().getChannel();
+			((NioSocketChannelConfig)channel.getConfig()).
+					setSendBufferSize(conf._packetBufferSize);
+			if (conf._initialObject != null){
+				channel.write(conf._initialObject);
 			}
 		}else{
-			//Need to setup the future listener.
-			_future.addListener(this);
+			future.addListener(this);
 		}
 		
 	}
 	
+	
 	private void createOIOClientConnection()throws ClientException{
+		
+		factory = new OioClientSocketChannelFactory(
+				Executors.newCachedThreadPool());		
+
+		bootstrap = new ClientBootstrap(factory);
+		bootstrap.setPipelineFactory(pipelineFactory);
+		bootstrap.setOption("tcpNoDelay", true);
+		bootstrap.setOption("keepAlive", true);
+		
+		// Start the connection attempt.
+		future = bootstrap.connect(
+						new InetSocketAddress(
+									conf._endPointHostname,
+									conf._endPointPort));
+		channel = future.awaitUninterruptibly().getChannel();
+		//TODO does OIO don't have asychronized data send?
+		
+//		if (_channel == null || 
+//			_channel.isConnected() == false){
+//			throw new RouterException("Failed to start the client connection to " + 
+//					_clientConfiguration._endPointHostname + ":" + 
+//					_clientConfiguration._endPointPort, null);
+//		}
+
+ 		bootstrap.setOption("tcpNoDelay", true);
+		bootstrap.setOption("keepAlive", true);
+       
+        //Need to set the sockets window size to gain better performance.
+		DefaultSocketChannelConfig config = (DefaultSocketChannelConfig)channel.getConfig();
+		config.setReceiveBufferSize(conf._readBufferSize);
 		
 	}
 	
@@ -234,6 +265,37 @@ public abstract class NettyClient extends AbstractClient<SocketClientConfig> {
 
 	@Override
 	public void stop() throws ClientException {
+		//This will close the socket.  This happens asynchronously.
+		if (channel != null){
+			ChannelFuture future = channel.close();
+			future.addListener(new ChannelFutureListener(){
+
+				@Override
+				public void operationComplete(ChannelFuture future)
+						throws Exception {
+					if (future.isDone()){
+						//check timeout handle exist or not
+						if (bootstrap != null && bootstrap.getPipelineFactory() != null 
+								&& bootstrap.getPipelineFactory().getPipeline() != null && bootstrap.getPipelineFactory().getPipeline().get("timeout")!=null)
+							bootstrap.getPipelineFactory().getPipeline().remove("timeout");
+						//release external resources (mzhang)
+//						if(!_clientConfiguration._bUseStaticThreadPool && _factory != null){
+//							_factory.releaseExternalResources(); // Can not call this in NIO thread
+//						}
+						
+						//This will stop the timeout handler
+						if(conf._bUseStaticThreadPool && factory != null){
+							factory.releaseExternalResources();
+							factory = null;
+						}
+						bootstrap = null;
+					}
+				}
+				
+			});	
+			
+			
+		}
 		
 	}
 	
@@ -242,5 +304,71 @@ public abstract class NettyClient extends AbstractClient<SocketClientConfig> {
 	}
 	
 	protected abstract ChannelPipeline newPipeline() throws ClientException;
+	
+	@Override
+	public void operationComplete(ChannelFuture future) throws Exception {
+		boolean bDone = future.isDone();
+		if (bDone == true){
+
+			
+			//this sync control could avoid the new status resource in the cache.
+			synchronized(this){
+				
+				channel = future.getChannel();
+				
+				if(channel.isConnected()){
+					((NioSocketChannelConfig)channel.getConfig()).
+									setSendBufferSize(conf._packetBufferSize);
+					
+					if (conf._initialObject != null){
+						//If someone asked to write data the we can actually write it now.
+						channel.write(conf._initialObject);
+					}else if (delayedWriteObject != null){
+						//If someone asked to write data the we can actually write it now.						
+						channel.write(delayedWriteObject);
+					}
+				}
+				
+			}
+
+		}
+	}
+	/**
+	 * This method will send data to the a server.  If the channel has
+	 * not been fully connected it will store the data in a pending write
+	 * array. Once connected the data will be pulled from the array and 
+	 * sent to the server.
+	 * 
+	 * This method will also check and see if the server is UDP or TCP.
+	 * If the server is UDP then the server address will be supplied to the
+	 * write method.
+	 */
+    public void write(Object data){   
+    	
+    	//If the channel is null then it hasn't been created yet so let
+    	//accumulate the things to write.
+    	
+    	if (channel == null){
+
+    		synchronized(this){
+    			if(channel==null){
+    	    		delayedWriteObject = data;
+    	    		return;
+    			}
+    		}
+    	}
+    	
+    	//channel is not null.
+    	if (isUDPClient){
+    			channel.write(data, serverAddress);
+        		delayedWriteObject = null;
+    		}else if (channel.isConnected() == true &&
+    				  channel.isOpen() == true && 
+    				  channel.isWritable() == true){
+    			channel.write(data);
+        		delayedWriteObject = null;
+    		}
+    		
+    }
 	
 }

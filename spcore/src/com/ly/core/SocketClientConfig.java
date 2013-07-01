@@ -28,6 +28,7 @@ public class SocketClientConfig implements IClientConfig {
 	public	Object 	_initialObject = null;
 	public boolean  _bEnableTLS = false;
 	public 	List<String> 	_sslEnabledProtocols;
+	public int _connectionTimeout = 0 ;
 	public String toString(){
 		return _endPointHostname + ":" + _endPointPort;
 	}

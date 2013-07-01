@@ -13,7 +13,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.FixedReceiveBufferSizePredictor;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
@@ -81,6 +80,7 @@ public abstract class NettyServer extends AbstractServer<SocketServerConfig> {
 		try{
 			 ChannelGroupFuture future = allChannels.close();
 			 future.awaitUninterruptibly();
+			// Can not call this in NIO thread
 			 factory.releaseExternalResources();
 			 bootstrap = null;
 		}catch(Exception e){
